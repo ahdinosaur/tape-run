@@ -3,6 +3,8 @@
 var run = require('..');
 var optimist = require('optimist');
 var spawn = require('child_process').spawn;
+var resolve = require('path').resolve;
+var cwd = process.cwd();
 
 var argv = optimist
   .usage('Pipe a browserify stream into this.\nbrowserify [opts] [files] | $0 [opts]')
@@ -19,6 +21,9 @@ var argv = optimist
   .alias('b', 'browser')
   .default('browser', 'electron')
 
+  .describe('mock', 'Mock http server')
+  .alias('m', 'mock')
+
   .describe('render', 'Command to pipe tap output to for custom rendering')
   .alias('r', 'render')
 
@@ -29,6 +34,10 @@ var argv = optimist
 
 if (argv.help) {
   return optimist.showHelp();
+}
+
+if ('string' == typeof argv.mock) {
+  argv.mock = require(resolve(cwd, argv.mock));
 }
 
 var runner = run(argv);
